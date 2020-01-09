@@ -9,51 +9,86 @@ const app = express()
 const compiler = webpack(WebpackConfig)
 const router = express.Router()
 
-router.get('/simple/get', (req, res) => {
-  res.json({
-    msg: 'hello world'
-  })
-})
+registerSimpleRouter();
+registerBaseRouter();
+registerErrorRouter();
+registerExtendRouter();
 
-router.get('/base/get', (req, res) => {
-  res.json(req.query)
-})
+function registerExtendRouter() {
+  router.get('/extend/get', (req, res) => {
+    res.json({ msg: 'hello world'});
+  });
+  router.options('/extend/options', (req, res) => {
+    res.end();
+  });
+  router.delete('/extend/delete', (req, res) => {
+    res.end();
+  });
+  router.head('/extend/head', (req, res) => {
+    res.end();
+  });
+  router.post('/extend/post', (req, res) => {
+    res.json(req.body);
+  });
+  router.put('/extend/put', (req, res) => {
+    res.json(req.body);
+  });
+  router.patch('/extend/patch', (req, res) => {
+    res.json(req.body);
+  });
+}
 
-router.post('/base/post', function(req, res) {
-  res.json(req.body)
-})
-
-router.post('/base/buffer', function(req, res) {
-  let msg = []
-  req.on('data', (chunk) => {
-    if (chunk) {
-      msg.push(chunk)
+function registerErrorRouter() {
+  router.get('/error/get', function(req, res) {
+    if (Math.random() > 0.5) {
+      res.json({
+        msg: `hello world`
+      })
+    } else {
+      res.status(500)
+      res.end()
     }
-  })
-  req.on('end', () => {
-    let buf = Buffer.concat(msg)
-    res.json(buf.toJSON())
-  })
-})
+  });
 
-router.get('/error/get', function(req, res) {
-  if (Math.random() > 0.5) {
-    res.json({
-      msg: `hello world`
-    })
-  } else {
-    res.status(500)
-    res.end()
-  }
-})
+  router.get('/error/timeout', function(req, res) {
+    setTimeout(() => {
+      res.json({
+        msg: `hello world`
+      })
+    }, 3000)
+  });
+}
 
-router.get('/error/timeout', function(req, res) {
-  setTimeout(() => {
-    res.json({
-      msg: `hello world`
+function registerBaseRouter() {
+  router.get('/base/get', (req, res) => {
+    res.json(req.query)
+  })
+
+  router.post('/base/post', function(req, res) {
+    res.json(req.body)
+  })
+
+  router.post('/base/buffer', function(req, res) {
+    let msg = []
+    req.on('data', (chunk) => {
+      if (chunk) {
+        msg.push(chunk)
+      }
     })
-  }, 3000)
-})
+    req.on('end', () => {
+      let buf = Buffer.concat(msg)
+      res.json(buf.toJSON())
+    })
+  })
+}
+
+function registerSimpleRouter() {
+  router.get('/simple/get', (req, res) => {
+    res.json({
+      msg: 'hello world'
+    })
+  })
+}
 
 app.use(webpackDevMiddleware(compiler, {
   publicPath: '/__build__/',
