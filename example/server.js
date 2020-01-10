@@ -36,6 +36,16 @@ function registerExtendRouter() {
   router.patch('/extend/patch', (req, res) => {
     res.json(req.body);
   });
+  router.get('/extend/user', (req, res) => {
+    res.json({
+      code: 200,
+      message: 'success',
+      result: {
+        name: 'ym',
+        age: 18
+      }
+    });
+  });
 }
 
 function registerErrorRouter() {
