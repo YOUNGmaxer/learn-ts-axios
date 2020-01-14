@@ -32,6 +32,7 @@ export interface AxiosRequestConfig {
   onUploadProgress?: (e: ProgressEvent) => void
   auth?: AxiosBasicCredentials
   validateStatus?: (status: number) => boolean
+  paramsSerializer?: ParamsSerializer
 
   [propName: string]: any
 }
@@ -136,4 +137,8 @@ export interface CancelStatic {
 export interface AxiosBasicCredentials {
   username: string
   password: string
+}
+
+export interface ParamsSerializer {
+  (params: any): string
 }
